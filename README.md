@@ -1,4 +1,4 @@
-# Dynamic-DTD
+# Dynamic DTD
 A python Flask app that generates dynamic DTDs for easy out-of-band data exfiltration.
 
 Usually when using external DTDs to perform out-of-band data exfiltration with an XXE Injection vulnerability, you have to keep modifying the DTD, updating the external entity to point to new locations (files, internal web resources, etc.) every time you want to exfiltrate something new. This simple python Flask app allows you to create dynamic DTDs based on a single URL parameter, meaning that you can easily use it with your favorite fuzzer and file wordlist, sit back, and watch the data come in.
